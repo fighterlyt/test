@@ -1,0 +1,12 @@
+syntax ="proto3";
+package add;
+service Add{
+    rpc Add(Data) returns (Data){}
+}
+message Data {
+     int64 value=1;
+     oneof foo{
+         string name = 4;
+         string key=5;
+     }
+}
