@@ -59,9 +59,31 @@ func main() {
 		fmt.Fprintf(tw, "%s\t", units.ByteSize(hs.Summary.Hardware.MemorySize))
 		fmt.Fprintf(tw, "%d\t", freeMemory)
 		fmt.Fprintf(tw, "\n")
-		spew.Dump(hs)
 	}
 
 	_ = tw.Flush()
+	m = view.NewManager(c.Client)
+
+	v, err = m.CreateContainerView(ctx, c.ServiceContent.RootFolder, []string{"VirtualMachine"}, true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	spew.Dump(v)
+	defer v.Destroy(ctx)
+
+	// Retrieve summary property for all machines
+	// Reference: http://pubs.vmware.com/vsphere-60/topic/com.vmware.wssdk.apiref.doc/vim.VirtualMachine.html
+	var vms []mo.VirtualMachine
+	err = v.Retrieve(ctx, []string{"VirtualMachine"}, []string{"summary"}, &vms)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	spew.Dump(vms)
+	// Print summary per vm (see also: govc/vm/info.go)
+
+	for _, vm := range vms {
+		fmt.Printf("%s: %s\n", vm.Summary.Config.Name, vm.Summary.Config.GuestFullName)
+	}
 
 }

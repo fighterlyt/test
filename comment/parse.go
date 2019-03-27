@@ -85,32 +85,40 @@ func FilterFunc(file *ast.File, fset *token.FileSet, source string, funcNames ..
 		}
 		cmap := ast.NewCommentMap(fset, file, file.Comments)
 		//spew.Dump(f)
-		ft := Func{
-			FuncName:  source[int(f.Pos())+len("func") : f.Params.Opening-1],
-			Arguments: processArguments(f.Params.List, source),
-			Returns:   processArguments(f.Results.List, source),
-			Comments:  len(cmap[f]) != 0,
-		}
-		//for k, _ := range cmap {
-		//	//println(reflect.TypeOf(k).String())
-		//	if decl, ok := k.(*ast.FuncDecl); ok {
-		//		spew.Println(decl.Doc.Text())
-		//	}
-		//}
-		if strings.Contains(ft.FuncName, "(") {
-			start := strings.Index(ft.FuncName, ")")
-			ft.FuncName = strings.TrimSpace(ft.FuncName[start+1:])
-		}
-		//println(source[f.Pos()-1:f.End()], f.Func.IsValid())
-		if len(funcNames) != 0 {
-			for _, funcName := range funcNames {
-				if strings.TrimSpace(funcName) == ft.FuncName {
-					println(ft.String())
-					break
-				}
+		//println(len(source),int(f.Pos())+len("func"),f.Params.Opening-1,source[int(f.Pos()-1):f.Params.Opening-1])
+		//println(source[int(f.Pos()):int(f.Pos())+10])
+		//println(source[int(f.Pos())+len("func") : f.Params.Opening-1])
+		if int(f.Pos())+len("func")< int(f.Params.Opening)-1{
+			ft := Func{
+				FuncName:  source[int(f.Pos())+len("func") : f.Params.Opening-1],
+				Arguments: processArguments(f.Params.List, source),
+				Comments:  len(cmap[f]) != 0,
 			}
-		} else {
-			println(ft.String())
+			if f.Results!=nil{
+				ft.Returns= processArguments(f.Results.List, source)
+			}
+			//for k, _ := range cmap {
+			//	//println(reflect.TypeOf(k).String())
+			//	if decl, ok := k.(*ast.FuncDecl); ok {
+			//		spew.Println(decl.Doc.Text())
+			//	}
+			//}
+			if strings.Contains(ft.FuncName, "(") {
+				start := strings.Index(ft.FuncName, ")")
+				ft.FuncName = strings.TrimSpace(ft.FuncName[start+1:])
+			}
+			//println(source[f.Pos()-1:f.End()], f.Func.IsValid())
+			if len(funcNames) != 0 {
+				for _, funcName := range funcNames {
+					if strings.TrimSpace(funcName) == ft.FuncName {
+						println(ft.String())
+						break
+					}
+				}
+			} else {
+				println(ft.String())
+			}
+
 		}
 		return false
 	})

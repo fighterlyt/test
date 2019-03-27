@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-var gitlab_domain = "http://172.105.195.24";
+var gitlab_domain = "http://172.105.195.24"
 
 var private_token = "vyPuzfkBVziUG-wcgyg9";
 
@@ -21,7 +21,7 @@ var font_size = "15";
 var path = "/api/v4/projects/%s/events&target_type=project";
 
 func main() {
-	checkProject("18")
+	checkProject("20")
 }
 
 func checkProject(project string) string {
