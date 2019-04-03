@@ -9,8 +9,8 @@ import (
 type Data struct {
 	sections     []*Section
 	index        int
-	upper        int
-	lower        int
+	upper        int //写一次写入的位置
+	lower        int //最早的阅读位置
 	sectionIndex int
 	wrapped      bool
 	ch           chan string
@@ -20,6 +20,9 @@ func NewData(count int, ch chan string) *Data {
 	return &Data{
 		sections: make([]*Section, count, count),
 		ch:       ch,
+		lower:    -1,
+		index:    -1,
+		sectionIndex:-1,
 	}
 }
 func (d Data) realIndex(index int) int {
@@ -33,19 +36,25 @@ func (d *Data) SetSectionIndex(index int) {
 }
 func (d *Data) Add(section *Section) {
 	d.sections[d.realIndex(d.upper)] = section
-	if d.upper == d.lower && d.wrapped {
-		d.lower = d.realIndex(d.lower + 1)
-
-	}
-	if d.upper > len(d.sections)-1 {
+	if d.upper >= len(d.sections)-1 {
 		d.wrapped = true
 	}
+	if d.lower<0{
+		d.lower=0
+	}else{
+		if d.upper == d.lower && d.wrapped {
+			d.lower = d.realIndex(d.lower + 1)
+
+		}
+	}
+
+
 	d.addUpper()
 
 	d.index = d.realIndex(d.index + 1)
 
 	d.sectionIndex++
-	d.ch <- "add"+time.Now().String()
+	d.ch <- "add" + time.Now().String()
 
 }
 func (d *Data) addUpper() {
@@ -72,13 +81,13 @@ func (d *Data) sectionIndexUpper() int {
 	}
 }
 func (d *Data) Get(index int) *Section {
-	//println("beforeGet",index,d.String())
-	//defer func(){
-	//	println("afterGet",index,d.String())
-	//}()
+	if index < 0 {
+		return nil
+	}
+
 	lower := d.sectionIndexLower()
 	upper := d.sectionIndexUpper()
-
+	d.ch <- fmt.Sprintln("beforeGet", index,upper,lower)
 	if index < upper && index >= lower {
 		index = index - d.sectionIndex + d.index
 
@@ -90,7 +99,7 @@ func (d *Data) Get(index int) *Section {
 	return nil
 }
 func (d Data) String() string {
-	return fmt.Sprintf("index=%d,sectionIndex=%d,upper=%d,lower=%d\n", d.index, d.sectionIndex, d.upper, d.lower)
+	return fmt.Sprintf("index=%d,sectionIndex=%d,upper=%d,lower=%d,wrapped=%v\n", d.index, d.sectionIndex, d.upper, d.lower, d.wrapped)
 }
 
 //Section 一个章节
