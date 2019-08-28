@@ -4,12 +4,17 @@ import (
 	"context"
 	"flag"
 	"github.com/globalsign/mgo"
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
+var (
+	url = "mongodb://my_user:password123@localhost:27018/orderbook"
+)
+
 func main() {
-	count := flag.Int("count", 100, "count")
+	count := flag.Int("count", 10000, "count")
 	flag.Parse()
 	data := make([]interface{}, 0, *count)
 	for i := 0; i < *count; i++ {
@@ -44,7 +49,7 @@ func main() {
 }
 
 func official(db, collectionName string, data []interface{}) error {
-	client, err := mongo.NewClient("mongodb://localhost:27017")
+	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		return err
 	}
@@ -67,7 +72,7 @@ func official(db, collectionName string, data []interface{}) error {
 	return nil
 }
 func officialBatch(db, collectionName string, data []interface{}) error {
-	client, err := mongo.NewClient("mongodb://localhost:27017")
+	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		return err
 	}
@@ -89,7 +94,7 @@ func officialBatch(db, collectionName string, data []interface{}) error {
 	return nil
 }
 func community(db, collectionName string, data []interface{}) error {
-	session, err := mgo.Dial("mongodb://localhost:27017")
+	session, err := mgo.Dial(url)
 	if err != nil {
 		return err
 	}
@@ -108,7 +113,7 @@ func community(db, collectionName string, data []interface{}) error {
 }
 
 func communityBatch(db, collectionName string, data []interface{}) error {
-	session, err := mgo.Dial("mongodb://localhost:27017")
+	session, err := mgo.Dial(url)
 	if err != nil {
 		return err
 	}
@@ -125,7 +130,7 @@ func communityBatch(db, collectionName string, data []interface{}) error {
 	return nil
 }
 func clean(db, collectionName string) error {
-	session, err := mgo.Dial("mongodb://localhost:27017")
+	session, err := mgo.Dial(url)
 
 	if err != nil {
 		return err

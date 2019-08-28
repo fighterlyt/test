@@ -65,7 +65,7 @@ func (f Func) String() string {
 	for _, argument := range f.Returns {
 		fmt.Fprintf(builder, "\t*\t%s\t%s\n", argument.Name, argument.Type)
 	}
-	if commentShow{
+	if commentShow {
 		fmt.Fprintf(builder, "有注释:[%v]\n", f.Comments)
 	}
 	fmt.Fprintf(builder, "*/")
@@ -81,6 +81,7 @@ func FilterFunc(file *ast.File, fset *token.FileSet, source string, funcNames ..
 	ast.Inspect(file, func(x ast.Node) bool {
 		f, ok := x.(*ast.FuncType)
 		if !ok {
+
 			return true
 		}
 		cmap := ast.NewCommentMap(fset, file, file.Comments)
@@ -88,21 +89,16 @@ func FilterFunc(file *ast.File, fset *token.FileSet, source string, funcNames ..
 		//println(len(source),int(f.Pos())+len("func"),f.Params.Opening-1,source[int(f.Pos()-1):f.Params.Opening-1])
 		//println(source[int(f.Pos()):int(f.Pos())+10])
 		//println(source[int(f.Pos())+len("func") : f.Params.Opening-1])
-		if int(f.Pos())+len("func")< int(f.Params.Opening)-1{
+		if int(f.Pos())+len("func") < int(f.Params.Opening)-1 {
 			ft := Func{
 				FuncName:  source[int(f.Pos())+len("func") : f.Params.Opening-1],
 				Arguments: processArguments(f.Params.List, source),
 				Comments:  len(cmap[f]) != 0,
 			}
-			if f.Results!=nil{
-				ft.Returns= processArguments(f.Results.List, source)
+			if f.Results != nil {
+				ft.Returns = processArguments(f.Results.List, source)
 			}
-			//for k, _ := range cmap {
-			//	//println(reflect.TypeOf(k).String())
-			//	if decl, ok := k.(*ast.FuncDecl); ok {
-			//		spew.Println(decl.Doc.Text())
-			//	}
-			//}
+
 			if strings.Contains(ft.FuncName, "(") {
 				start := strings.Index(ft.FuncName, ")")
 				ft.FuncName = strings.TrimSpace(ft.FuncName[start+1:])
