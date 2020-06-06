@@ -31,7 +31,7 @@ func randInt(min int, max int) int {
 }
 
 func fibonacciRPC(n int) (res int, err error) {
-	conn, err := amqp.Dial("amqp://winone:winone4321@localhost:5672/")
+	conn, err := amqp.Dial("amqp://user:123@localhost:5672/test")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -98,9 +98,9 @@ func main() {
 
 	n := bodyFrom(os.Args)
 
-	for i:=0;i<n;i++{
+	for i := 0; i < n; i++ {
 		log.Printf(" [x] Requesting fib(%d)", n+i)
-		res, err := fibonacciRPC(n+i)
+		res, err := fibonacciRPC(n + i)
 		failOnError(err, "Failed to handle RPC request")
 
 		log.Printf(" [.] Got %d", res)

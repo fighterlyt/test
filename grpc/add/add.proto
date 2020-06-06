@@ -1,12 +1,19 @@
-syntax ="proto3";
+syntax = "proto3";
 package add;
 service Add{
-    rpc Add(Data) returns (Data){}
+  rpc Add(Data) returns (Data){}
 }
 message Data {
-     int64 value=1;
-     oneof foo{
-         string name = 4;
-         string key=5;
-     }
+  int64 value = 1;
+  oneof foo{
+    Name name = 4;
+    ID id = 5;
+  }
+}
+
+message Name {
+  string name = 1;
+}
+message ID{
+  int64 id = 1;
 }

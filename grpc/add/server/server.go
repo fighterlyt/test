@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/fighterlyt/test/grpc/add"
 	"context"
-	"net"
-	"log"
+	"github.com/fighterlyt/test/grpc/add"
 	"google.golang.org/grpc"
+	"log"
+	"net"
 )
 
 func main() {
@@ -23,5 +23,6 @@ type addServer struct {
 
 func (addServer) Add(ctx context.Context, data *add.Data) (*add.Data, error) {
 	data.Value++
+	data.Foo = &add.Data_Name{Name: "xxx"}
 	return data, nil
 }

@@ -23,7 +23,7 @@ func fib(n int) int {
 }
 
 func main() {
-	conn, err := amqp.Dial("amqp://winone:winone4321@localhost:5672/")
+	conn, err := amqp.Dial("amqp://user:123@localhost:5672/test")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
