@@ -22,7 +22,7 @@ type addServer struct {
 }
 
 func (addServer) Add(ctx context.Context, data *add.Data) (*add.Data, error) {
+	log.Println("add", data)
 	data.Value++
-	data.Foo = &add.Data_Name{Name: "xxx"}
 	return data, nil
 }

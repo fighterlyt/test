@@ -1,13 +1,13 @@
 package main
 
 import (
-	"google.golang.org/grpc"
-	"github.com/fighterlyt/test/grpc/add"
-	"time"
-	"fmt"
-	"log"
 	"context"
+	"fmt"
+	"github.com/fighterlyt/test/grpc/add"
+	"google.golang.org/grpc"
+	"log"
 	"sync"
+	"time"
 )
 
 func main() {
@@ -24,7 +24,13 @@ func main() {
 		for i := 0; i < 8; i++ {
 			go func() {
 				for i := startValue; i < endValue; i++ {
-					if _, err := client.Add(context.TODO(), &add.Data{Value: 1}); err != nil {
+					argument := &add.Data{Value: 1}
+					if i%2 == 0 {
+						argument.Foo = &add.Data_Name{Name: "1"}
+					} else {
+						argument.Foo = &add.Data_Key{Key: "2"}
+					}
+					if _, err := client.Add(context.TODO(), argument); err != nil {
 						panic(fmt.Sprintf("%d-%d,耗时%s,错误:%s", startValue, i, time.Since(start).String(), err.Error()))
 					}
 				}
